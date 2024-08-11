@@ -124,10 +124,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: List artifacts
-        uses: actions/artifact@v3
+      - name: Install artifact action
+        uses: actions/setup-node@v4
         with:
-          path: .
+          node-version: '18'
+
+      - run: npm install @actions/artifact
+
+      - name: List artifacts
+        run: |
+          const core = require('@actions/core');
+          const artifact = require('@actions/artifact');
+
+          try {
+            const client = artifact.create();
+            const artifacts = await client.list();
+
+            console.log(artifacts);
+          } catch (error) {
+            core.setFailed(error.message);
+          }
+          
     
       - name: Download artifact
         uses: actions/download-artifact@v3
