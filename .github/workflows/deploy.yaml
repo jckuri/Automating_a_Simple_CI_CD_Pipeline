@@ -124,22 +124,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install artifact action
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - run: npm install @actions/artifact
-
-      - name: List artifacts
-        uses: actions/artifact@v3
-          
     
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: "github-pages"
-          path: "_site"
+#      - name: Download artifact
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: "github-pages"
+#          path: "_site"
     
       - name: Deploy to GitHub Pages
         id: deployment
