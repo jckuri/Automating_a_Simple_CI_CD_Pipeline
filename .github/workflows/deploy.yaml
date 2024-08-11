@@ -132,18 +132,7 @@ jobs:
       - run: npm install @actions/artifact
 
       - name: List artifacts
-        run: |
-          const core = require('@actions/core');
-          const artifact = require('@actions/artifact');
-
-          try {
-            const client = artifact.create();
-            const artifacts = await client.list();
-
-            console.log(artifacts);
-          } catch (error) {
-            core.setFailed(error.message);
-          }
+        uses: actions/artifact@v3
           
     
       - name: Download artifact
