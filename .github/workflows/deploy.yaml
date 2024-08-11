@@ -32,9 +32,12 @@ concurrency:
 jobs:
 
   test:
+  
     runs-on: ubuntu-latest
     timeout-minutes: 2
+    
     steps:
+    
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
@@ -66,12 +69,13 @@ jobs:
           node script/url-checker.js -t $URL_CHECKER_TIMEOUT
 
   build:
+    
     needs: test
     runs-on: ubuntu-latest
-#    env: 
-#      PATH_PREFIX: ""
     timeout-minutes: 2
+    
     steps:
+    
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
@@ -113,6 +117,7 @@ jobs:
           path: "_site"
 
   deploy:
+  
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -124,12 +129,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    
-#      - name: Download artifact
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: "github-pages"
-#          path: "_site"
     
       - name: Deploy to GitHub Pages
         id: deployment
