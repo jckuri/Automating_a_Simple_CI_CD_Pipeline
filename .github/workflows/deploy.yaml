@@ -125,7 +125,9 @@ jobs:
 
     steps:
       - name: List artifacts
-        uses: actions/artifact@v3    
+        uses: actions/artifact@v3
+        with:
+          path: .
     
       - name: Download artifact
         uses: actions/download-artifact@v3
