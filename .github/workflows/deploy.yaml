@@ -1,6 +1,7 @@
 name: Deploy
 
 on:
+
   push:
     branches:
       - main
@@ -9,20 +10,23 @@ on:
       - 'README.md'
       - 'CONTRIBUTING.md'
       - 'LICENSE'
+
   pull_request:
     branches:
       - main  
+
   workflow_dispatch:
     inputs:
       force_deploy:
         type: boolean
-        default: true
+        default: false
+        required: true
 
 env:
   URL_CHECKER_TIMEOUT: 30
 
 concurrency:
-  group: the-workflow-group
+  group: pages-group
   cancel-in-progress: true
 
 jobs:
@@ -31,7 +35,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -42,7 +49,7 @@ jobs:
         uses: actions/cache@v4
         with: 
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('~/.npm') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -55,18 +62,24 @@ jobs:
       - name: Run scripts
         run: |
           # npm run script/**
+          echo "URL_CHECKER_TIMEOUT=$URL_CHECKER_TIMEOUT"
           node script/url-checker.js -t $URL_CHECKER_TIMEOUT
 
   build:
     needs: test
     runs-on: ubuntu-latest
-    env: 
-      PATH_PREFIX: ""
+#    env: 
+#      PATH_PREFIX: ""
     timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - uses: actions/configure-pages@v5
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -77,102 +90,56 @@ jobs:
         uses: actions/cache@v4
         with: 
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('~/.npm') }}
           restore-keys: |
             ${{ runner.os }}-node-
       
       - name: Install dependencies
         run: |
-          npm install
-          npx @11ty/eleventy
+          npm ci
 
       - name: Set PATH_PREFIX
         run: |
-          echo "Contens of PATH_PREFIX=$PATH_PREFIX"
-          repository_name=$(echo "${{ github.repository }}" | cut -d '/' -f 2)
-          PATH_PREFIX="/${repository_name}/"
-          echo "PATH_PREFIX=$PATH_PREFIX" >> $GITHUB_ENV
-          echo "Contens of PATH_PREFIX=$PATH_PREFIX"
+          PATH_PREFIX="/$(echo "${{ github.repository }}" | cut -d '/' -f2-)/"
 
       - name: Build site
         run: |
-          npm run eleventy:prod
+          npm run prod
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
-          name: build-artifact
-          if-no-files-found: error
-
-  # deploy:
-  #   permissions: write-all
-  #     # contents: write
-  #     # pages: write
-  #     # id-token: write
-  #     # # contents: read
-  #     # pull-requests: write
-  #     # repository-projects: write
-  #   environment:
-  #     name: github-pages
-  #     url: ${{ steps.deployment.outputs.page_url }}
-  #   needs: build
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-
-  #     - name: Setup Pages
-  #       uses: actions/configure-pages@v5
-
-  #     - name: Upload artifact
-  #       uses: actions/upload-pages-artifact@v3
-  #       with:
-  #         # Upload entire repository
-  #         path: "_site"
-
-  #     - name: Deploy to GitHub Pages
-  #       id: deployment
-  #       uses: actions/deploy-pages@v4
-
-  #     - name: Report status
-  #       run: |
-  #         echo "# Deployment status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
-  #         echo "Deployed ${{ github.ref }} to ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
-
-  #     - name: Report issue
-  #       run: |
-  #         gh auth login --with-token <<<"${{ secrets.GITHUB_TOKEN }}"
-  #         DATE=$(date)
-  #         STATUS="${{ job.status }}"
-  #         ISSUE_TITLE="$DATE - Deployment: $STATUS"
-  #         URL="${{ steps.deployment.outputs.page_url }}"
-  #         ISSUE_BODY="URL: $URL"
-  #         echo "Title: $ISSUE_TITLE. Body: $ISSUE_BODY."
-  #         gh issue create --title "$ISSUE_TITLE" --body "$ISSUE_BODY"
+          path: "_site"
 
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    permissions: write-all
+    permissions:
+      pages: write
+      issues: write
+      id-token: write
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: "./_site"
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        
+      - name: Report status
+        run: |
+          echo "# Deployment status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "Deployed ${{ github.ref }} to ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Report issue
+        run: |
+          gh auth login --with-token <<<"${{ secrets.GITHUB_TOKEN }}"
+          DATE=$(date -u)
+          STATUS="${{ steps.deployment.outcome }}"
+          ISSUE_TITLE="$DATE - Deployment: $STATUS"
+          URL="${{ steps.deployment.outputs.page_url }}"
+          ISSUE_BODY="URL: $URL"
+          echo "Title: $ISSUE_TITLE. Body: $ISSUE_BODY."
+          gh issue create --title "$ISSUE_TITLE" --body "$ISSUE_BODY"
+
