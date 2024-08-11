@@ -109,6 +109,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          name: pages
           path: "_site"
 
   deploy:
@@ -123,6 +124,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: pages
+          path: "_site"
+    
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
