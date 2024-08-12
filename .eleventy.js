@@ -68,9 +68,9 @@ module.exports = config => {
   // repository name
   
   // const pathPrefix = '';
-  const pathPrefix = '/Automating_a_Simple_CI_CD_Pipeline/';
-  console.log(`\n\npathPrefix=${pathPrefix}\n\n`);
-  // const pathPrefix = process.env.PATH_PREFIX || '/';
+  // const pathPrefix = '/Automating_a_Simple_CI_CD_Pipeline/';
+  const pathPrefix = process.env.PATH_PREFIX || '/';
+  console.log(`\n\nprocess.env.PATH_PREFIX=${process.env.PATH_PREFIX}\npathPrefix=${pathPrefix}\n\n`);  
 
   return {
     markdownTemplateEngine: 'njk',
