@@ -123,7 +123,7 @@ jobs:
     permissions:
       pages: write
       issues: write
-      #id-token: write
+      id-token: write
       contents: write
     needs: build
     runs-on: ubuntu-latest
