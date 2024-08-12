@@ -70,7 +70,8 @@ module.exports = config => {
   // const pathPrefix = '';
   // const pathPrefix = '/Automating_a_Simple_CI_CD_Pipeline/';
   const pathPrefix = process.env.PATH_PREFIX || '/';
-  console.log(`\n\nprocess.env.PATH_PREFIX=${process.env.PATH_PREFIX}\npathPrefix=${pathPrefix}\n\n`);  
+  console.log(`process.env.PATH_PREFIX=${process.env.PATH_PREFIX}`);
+  console.log(`pathPrefix=${pathPrefix}`);  
 
   return {
     markdownTemplateEngine: 'njk',
