@@ -66,7 +66,7 @@ module.exports = config => {
   // as the site URL will be https://<username>.github.io/<repo>/index.html
   // when deploying to Pages, set the PATH_PREFIX environment variable to your 
   // repository name
-  const pathPrefix = process.env.PATH_PREFIX || '/Automating_a_Simple_CI_CD_Pipeline/';
+  const pathPrefix = '/Automating_a_Simple_CI_CD_Pipeline/';
   // const pathPrefix = process.env.PATH_PREFIX || '/';
 
   return {
