@@ -69,6 +69,7 @@ module.exports = config => {
   
   // const pathPrefix = '';
   const pathPrefix = '/Automating_a_Simple_CI_CD_Pipeline/';
+  console.log("\npathPrefix=" + pathPrefix + "\n");
   // const pathPrefix = process.env.PATH_PREFIX || '/';
 
   return {
