@@ -22,9 +22,6 @@ on:
         default: false
         required: true
 
-env:
-  URL_CHECKER_TIMEOUT: 30
-
 concurrency:
   group: pages-group
   cancel-in-progress: true 
@@ -35,6 +32,8 @@ jobs:
   
     runs-on: ubuntu-latest
     timeout-minutes: 2
+    env:
+      URL_CHECKER_TIMEOUT: 30
     
     steps:
     
@@ -124,7 +123,8 @@ jobs:
     permissions:
       pages: write
       issues: write
-      id-token: write
+      #id-token: write
+      contents: write
     needs: build
     runs-on: ubuntu-latest
 
