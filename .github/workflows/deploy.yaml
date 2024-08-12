@@ -63,7 +63,6 @@ jobs:
 
       - name: Run scripts
         run: |
-          # npm run script/**
           echo "URL_CHECKER_TIMEOUT=$URL_CHECKER_TIMEOUT"
           node script/url-checker.js -t $URL_CHECKER_TIMEOUT
 
