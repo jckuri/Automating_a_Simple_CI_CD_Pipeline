@@ -27,7 +27,7 @@ env:
 
 concurrency:
   group: pages-group
-  cancel-in-progress: true
+  cancel-in-progress: true 
 
 jobs:
 
