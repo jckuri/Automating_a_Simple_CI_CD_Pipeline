@@ -106,9 +106,9 @@ jobs:
           
       - name: Set PATH_PREFIX
         run: |
-          echo "env.PATH_PREFIX=$env.PATH_PREFIX"
+          echo "env.PATH_PREFIX=${{ env.PATH_PREFIX }}"
           env.PATH_PREFIX="/$(echo "${{ github.repository }}" | cut -d '/' -f2-)/"
-          echo "env.PATH_PREFIX=$env.PATH_PREFIX" 
+          echo "env.PATH_PREFIX=${{ env.PATH_PREFIX }}" 
 
       - name: Build site
         run: |
